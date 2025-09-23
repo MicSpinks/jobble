@@ -1,5 +1,79 @@
-.bg-index{
-    background: url("/static/img/background.jpg") no-repeat
-    fixed;
-    background-size: 100% auto;
+* {
+  font-family: "DM Serif Text", serif;
+  font-weight: 400;
+  font-style: normal;
 }
+.main-content {
+    background-color: #F3F3F7;
+    width: 90vw;
+    /* height: 90vh; */
+    margin-left: 10vw;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.sidebar {
+    height: 100vh;
+    width: 10vw;
+    /* Full viewport height */
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* padding: 2vh; */
+    background-color: #181A25;
+    justify-content: space-between;
+}
+.sidebar .nav-link {
+    color: #ffffff;
+    /* font-size: calc(0.5rem); */
+    /* height: 100%; */
+}
+
+.test {
+    height: 10vh;
+    width: 10vw;
+}
+
+.test2 {
+    justify-content: flex-end;
+}
+
+.testsvg {
+    width: auto;
+    height: auto;
+}
+
+.sidebar .nav-link.active {
+    background-color: #495057;
+    /* border-radius: 0.25rem; */
+}
+
+.sidebar .test:hover {
+    background-color: #202331;
+    /* border-radius: 0.25rem; */
+    color: #B3A369;
+}
+.sidebar .test a:visited {
+    color: #F3F3F7;
+}
+.sidebar .test a:hover {
+    color: #B3A369;
+}
+
+h1 {
+    font-size: 36px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 20px;
+}
+h4 {
+    font-size: 16px;
+}
+
+
+
