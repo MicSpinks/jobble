@@ -18,7 +18,7 @@
  <div class="d-flex">
     <nav class="sidebar d-flex flex-column align-items-center">
       <div class="testsvg d-flex align-items-center justify-content-center">
-        <a href="#" class="d-flex align-items-center">
+        <a href="{% url 'home.index' %}" class="d-flex align-items-center">
           <img src="{% static 'img/Logo.svg' %}" width="100%" height="100%" alt="">
         </a>
       </div>
@@ -26,7 +26,7 @@
       <ul class="nav flex-column mb-auto">
         <li class="nav-item">
           <div class="test d-flex align-items-center justify-content-center">
-          <a href="{% url 'Rhome.postjobs' %}" class="nav-link">Post Jobs</a>
+          <a href="{% url 'home.applications' %}" class="nav-link">Applications</a>
           </div>
         </li>
         <li class="nav-item">
