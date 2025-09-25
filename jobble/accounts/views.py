@@ -37,6 +37,40 @@ def login(request):
 
 # Create your views here.
 from .forms import CustomUserCreationForm, CustomErrorList
+from .forms import ProfileForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+
+
+@login_required
+def edit_profile(request):
+    template_data = {'title': 'Edit Profile'}
+    user = request.user
+    if request.method == 'GET':
+        form = ProfileForm(instance=user)
+        template_data['form'] = form
+        return render(request, 'accounts/profile_edit.html', {'template_data': template_data})
+    else:
+        form = ProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts.profile_detail', username=user.username)
+        else:
+            template_data['form'] = form
+            return render(request, 'accounts/profile_edit.html', {'template_data': template_data})
+
+
+def profile_detail(request, username):
+    # public profile view; recruiters may view limited fields depending on privacy flags
+    user = get_object_or_404(__import__('django.contrib.auth').contrib.auth.get_user_model(), username=username)
+    template_data = {'profile_user': user}
+    # explicitly choose base template for the viewer so recruiters see recruiter layout
+    if request.user.is_authenticated and getattr(request.user, 'role', '').lower() == 'recruiter':
+        template_data['base_template'] = 'baseR.html'
+    else:
+        # allow context processor to supply default for other cases
+        template_data.setdefault('base_template', None)
+    return render(request, 'accounts/profile_detail.html', {'template_data': template_data})
 def signup(request):
     template_data = {}
     template_data['title'] = 'Sign Up'
