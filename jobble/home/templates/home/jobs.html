@@ -1,13 +1,38 @@
 {% extends base_template %}
 {% load static %}
+
 {% block content %}
 <div class="container py-4">
-	<h1 class="mb-4">Jobs</h1>
-	<div class="card">
-		<img src="{% static 'img/WIP.jpg' %}" height=625vh class="card-img-top" alt="Work in progress banner">
-		<div class="card-body">
-			<p class="card-text">This page is under construction. Job listings will appear here soon.</p>
-		</div>
-	</div>
+  <h1 class="mb-4">Job Postings</h1>
+  <div class="row">
+
+	<!-- Search input form -->
+	<form action="{% url 'home.jobs' %}" method="get">
+		<input name="q" type="text" placeholder="Search...">
+		<button action="{% url 'home.jobs' %}">Reset Search</button>
+	</form>
+	<!-- Search input form -->
+
+	<!-- Job post cards -->
+    {% for job in jobs %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ job.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+            <p class="card-text">
+              <strong>Location:</strong> {{ job.location }}<br>
+              <strong>Posted by:</strong> {{ job.posted_by.username }}<br>
+              <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>There are currently no jobs available.</p>
+    {% endfor %}
+	<!-- Job post cards -->
+	 
+  </div>
 </div>
 {% endblock content %}
