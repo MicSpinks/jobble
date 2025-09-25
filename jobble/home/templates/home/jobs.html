@@ -8,9 +8,37 @@
 
 	<!-- Search input form -->
 	<form action="{% url 'home.jobs' %}" method="get">
-		<input name="q" type="text" placeholder="Search...">
-		<button action="{% url 'home.jobs' %}">Reset Search</button>
-	</form>
+    <input name="titlequery" type="text" placeholder="Job Title..."
+           value="{{ request.GET.titlequery }}">
+    
+    <input name="locationquery" type="text" placeholder="Location..."
+           value="{{ request.GET.locationquery }}">
+    
+    <input name="skillsquery" type="text" placeholder="Skills..."
+           value="{{ request.GET.skillsquery }}">
+
+    <select name="remote" id="remote">
+        <option value="">Remote/On-site</option>
+        <option value="onsite" {% if request.GET.remote == "onsite" %}selected{% endif %}>On-site</option>
+        <option value="hybrid" {% if request.GET.remote == "hybrid" %}selected{% endif %}>Hybrid</option>
+        <option value="remote" {% if request.GET.remote == "remote" %}selected{% endif %}>Remote</option>
+    </select>
+
+    <select name="visa" id="visa">
+        <option value="">Visa Sponsorship</option>
+        <option value="yes" {% if request.GET.visa == "yes" %}selected{% endif %}>Yes</option>
+        <option value="no" {% if request.GET.visa == "no" %}selected{% endif %}>No</option>
+    </select>
+
+    <input type="number" name="minsalary" id="minsalary" placeholder="minsalary"
+           value="{{ request.GET.minsalary }}">
+    <input type="number" name="maxsalary" id="maxsalary" placeholder="maxsalary"
+           value="{{ request.GET.maxsalary }}">
+
+    <button type="submit">Search</button>
+</form>
+    <a href="{% url 'home.jobs' %}">Reset</a>
+
 	<!-- Search input form -->
 
 	<!-- Job post cards -->
@@ -19,12 +47,14 @@
         <div class="card shadow-sm h-100">
           <div class="card-body">
             <h5 class="card-title">{{ job.title }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
             <p class="card-text">
               <strong>Location:</strong> {{ job.location }}<br>
-              <strong>Posted by:</strong> {{ job.posted_by.username }}<br>
-              <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
+              <strong>Salary:</strong> {{ job.salary_range }}<br>
+              <strong>Remote/On-site:</strong> {{ job.get_remote_or_onsite_display }}<br>
+              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }}<br>
+              <strong>Skills:</strong> {{ job.skills }}
             </p>
+            <small class="text-muted">Posted {{ job.date_posted|date:"M d, Y" }}</small>
           </div>
         </div>
       </div>
@@ -32,7 +62,7 @@
       <p>There are currently no jobs available.</p>
     {% endfor %}
 	<!-- Job post cards -->
-	 
+
   </div>
 </div>
 {% endblock content %}
