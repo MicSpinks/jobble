@@ -28,7 +28,7 @@ def login(request):
         else:
             auth_login(request, user)
             if user.username.lower() == 'admin':
-                return redirect('admin:index')
+                return redirect('Ahome.index')
             elif user.role == "recruiter":
                 return redirect("Rhome.index") 
             else:
