@@ -1,0 +1,37 @@
+{% extends template_data.base_template|default:base_template %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+  <h1>{{ template_data.profile_user.username }}'s Profile</h1>
+  {% if template_data.profile_user.show_headline %}
+  <h4>Headline</h4>
+  <p>{{ template_data.profile_user.headline }}</p>
+  {% endif %}
+
+  {% if template_data.profile_user.show_skills %}
+  <h4>Skills</h4>
+  <p>{{ template_data.profile_user.skills|linebreaks }}</p>
+  {% endif %}
+
+  {% if template_data.profile_user.show_education %}
+  <h4>Education</h4>
+  <p>{{ template_data.profile_user.education|linebreaks }}</p>
+  {% endif %}
+
+  {% if template_data.profile_user.show_work_experience %}
+  <h4>Work Experience</h4>
+  <p>{{ template_data.profile_user.work_experience|linebreaks }}</p>
+  {% endif %}
+
+  {% if template_data.profile_user.show_location %}
+  <h4>Location</h4>
+  <p>{{ template_data.profile_user.location }}</p>
+  {% endif %}
+
+  {% if template_data.profile_user.show_links %}
+  <h4>Links</h4>
+  <p>{{ template_data.profile_user.links|linebreaks }}</p>
+  {% endif %}
+
+</div>
+{% endblock content %}

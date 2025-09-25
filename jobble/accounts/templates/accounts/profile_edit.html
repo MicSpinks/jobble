@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+  <h1>Edit Profile</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ template_data.form.headline.label_tag }}
+      {{ template_data.form.headline }}
+    </div>
+    <div class="mb-3">
+      {{ template_data.form.skills.label_tag }}
+      {{ template_data.form.skills }}
+    </div>
+    <div class="mb-3">
+      {{ template_data.form.education.label_tag }}
+      {{ template_data.form.education }}
+    </div>
+    <div class="mb-3">
+      {{ template_data.form.work_experience.label_tag }}
+      {{ template_data.form.work_experience }}
+    </div>
+    <div class="mb-3">
+      {{ template_data.form.location.label_tag }}
+      {{ template_data.form.location }}
+    </div>
+    <div class="mb-3">
+      {{ template_data.form.links.label_tag }}
+      {{ template_data.form.links }}
+    </div>
+
+    <h4>Privacy settings</h4>
+    <div class="form-check">
+      {{ template_data.form.show_headline }} {{ template_data.form.show_headline.label_tag }}
+    </div>
+    <div class="form-check">
+      {{ template_data.form.show_skills }} {{ template_data.form.show_skills.label_tag }}
+    </div>
+    <div class="form-check">
+      {{ template_data.form.show_education }} {{ template_data.form.show_education.label_tag }}
+    </div>
+    <div class="form-check">
+      {{ template_data.form.show_work_experience }} {{ template_data.form.show_work_experience.label_tag }}
+    </div>
+    <div class="form-check">
+      {{ template_data.form.show_location }} {{ template_data.form.show_location.label_tag }}
+    </div>
+    <div class="form-check mb-3">
+      {{ template_data.form.show_links }} {{ template_data.form.show_links.label_tag }}
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+</div>
+{% endblock content %}
