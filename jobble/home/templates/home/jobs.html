@@ -47,14 +47,16 @@
         <div class="card shadow-sm h-100">
           <div class="card-body">
             <h5 class="card-title">{{ job.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ job.location }}</h6>
+
             <p class="card-text">
-              <strong>Location:</strong> {{ job.location }}<br>
-              <strong>Salary:</strong> {{ job.salary_range }}<br>
-              <strong>Remote/On-site:</strong> {{ job.get_remote_or_onsite_display }}<br>
-              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }}<br>
-              <strong>Skills:</strong> {{ job.skills }}
+              <strong>Salary:</strong> {{ job.salary_display }} <br>
+              <strong>Work Type:</strong> {{ job.get_remote_or_onsite_display }} <br>
+              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }} <br>
+              <strong>Skills:</strong> {{ job.skills }} <br>
+              <strong>Posted by:</strong> {{ job.posted_by.username }} <br>
+              <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
             </p>
-            <small class="text-muted">Posted {{ job.date_posted|date:"M d, Y" }}</small>
           </div>
         </div>
       </div>
