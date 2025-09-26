@@ -27,7 +27,7 @@ def login(request):
                 {'template_data': template_data})
         else:
             auth_login(request, user)
-            if user.username.lower() == 'admin':
+            if user.is_superuser:
                 return redirect('Ahome.index')
             elif user.role == "recruiter":
                 return redirect("Rhome.index") 
