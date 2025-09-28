@@ -5,56 +5,89 @@
 <div class="container py-4">
   <h1 class="mb-4">Job Postings</h1>
   <div class="row">
+<!-- Job Search Form -->
+<form class="job-search" action="{% url 'home.jobs' %}" method="get">
 
-	<!-- Search input form -->
-	<form action="{% url 'home.jobs' %}" method="get">
+  <!-- Main search inputs -->
+  <div class="job-search-main">
     <input name="titlequery" type="text" placeholder="Job Title..."
            value="{{ request.GET.titlequery }}">
-    
     <input name="locationquery" type="text" placeholder="Location..."
            value="{{ request.GET.locationquery }}">
-    
-    <input name="skillsquery" type="text" placeholder="Skills..."
-           value="{{ request.GET.skillsquery }}">
+    <button type="submit" id="job-search-submit">Search</button>
+  </div>
 
+  <!-- Horizontal line -->
+  <hr class="">
+
+  <!-- Filters -->
+  <div class="job-search-filters">
+    <!-- Toggle switch for "My Skills" -->
+    <label class="checkbox-box">
+  <input type="checkbox" name="skillsquery" value="true" {% if request.GET.skillsquery %}checked{% endif %}>
+  <span>My Skills</span>
+</label>
+
+
+    <!-- Remote/On-site -->
     <select name="remote" id="remote">
-        <option value="">Remote/On-site</option>
+        <option value="">Work Type</option>
         <option value="onsite" {% if request.GET.remote == "onsite" %}selected{% endif %}>On-site</option>
         <option value="hybrid" {% if request.GET.remote == "hybrid" %}selected{% endif %}>Hybrid</option>
         <option value="remote" {% if request.GET.remote == "remote" %}selected{% endif %}>Remote</option>
     </select>
 
+    <!-- Visa -->
     <select name="visa" id="visa">
-        <option value="">Visa Sponsorship</option>
+        <option value="">Visa</option>
         <option value="yes" {% if request.GET.visa == "yes" %}selected{% endif %}>Yes</option>
         <option value="no" {% if request.GET.visa == "no" %}selected{% endif %}>No</option>
     </select>
 
-    <input type="number" name="minsalary" id="minsalary" placeholder="minsalary"
+    <!-- Minimum salary -->
+    <input type="number" name="minsalary" id="minsalary" placeholder="Min Salary"
            value="{{ request.GET.minsalary }}">
-    <input type="number" name="maxsalary" id="maxsalary" placeholder="maxsalary"
-           value="{{ request.GET.maxsalary }}">
 
-    <button type="submit">Search</button>
+    <!-- Reset button -->
+    <a id="job-search-reset" href="{% url 'home.jobs' %}">Reset</a>
+  </div>
+
 </form>
-    <a href="{% url 'home.jobs' %}">Reset</a>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector(".job-search");
 
-	<!-- Search input form -->
+  // Auto-submit on dropdowns, checkboxes
+  form.querySelectorAll("select, input[type=checkbox]").forEach(el => {
+    el.addEventListener("change", () => form.submit());
+  });
 
+  // Auto-submit for text + number inputs with debounce (waits until user stops typing)
+  form.querySelectorAll("input[type=text], input[type=number]").forEach(el => {
+    let timer;
+    el.addEventListener("input", () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => form.submit(), 500); // 0.5s pause after typing
+    });
+  });
+});
+</script>
 	<!-- Job post cards -->
     {% for job in jobs %}
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card shadow-sm h-100">
           <div class="card-body">
             <h5 class="card-title">{{ job.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ job.location }}</h6>
+
             <p class="card-text">
-              <strong>Location:</strong> {{ job.location }}<br>
-              <strong>Salary:</strong> {{ job.salary_range }}<br>
-              <strong>Remote/On-site:</strong> {{ job.get_remote_or_onsite_display }}<br>
-              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }}<br>
-              <strong>Skills:</strong> {{ job.skills }}
+              <strong>Salary:</strong> {{ job.salary_display }} <br>
+              <strong>Work Type:</strong> {{ job.get_remote_or_onsite_display }} <br>
+              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }} <br>
+              <strong>Skills:</strong> {{ job.skills }} <br>
+              <strong>Posted by:</strong> {{ job.posted_by.username }} <br>
+              <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
             </p>
-            <small class="text-muted">Posted {{ job.date_posted|date:"M d, Y" }}</small>
           </div>
         </div>
       </div>

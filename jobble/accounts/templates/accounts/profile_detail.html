@@ -4,6 +4,11 @@
 <div class="container py-4">
   <h1>{{ template_data.profile_user.username }}'s Profile</h1>
   {% if template_data.profile_user.show_headline %}
+  <h4>Contact</h4>
+  <a href="mailto:{{ template_data.profile_user.email }}">{{ template_data.profile_user.email }}</a>
+  {% endif %}
+
+  {% if template_data.profile_user.show_headline %}
   <h4>Headline</h4>
   <p>{{ template_data.profile_user.headline }}</p>
   {% endif %}

@@ -14,6 +14,7 @@ def applications(request):
 
 # Renders the jobs page while filtering results based on user input
 def jobs(request):
+    user = request.user
     titlequery = request.GET.get("titlequery")
     locationquery = request.GET.get("locationquery")
     skillsquery = request.GET.get("skillsquery")
@@ -27,11 +28,11 @@ def jobs(request):
         jobs = jobs.filter(title__icontains=titlequery)
     if locationquery:
         jobs = jobs.filter(location__icontains=locationquery)
-    if skillsquery:
-        skill_list = [s.strip() for s in skillsquery.split(",") if s.strip()]
+    if skillsquery == "true" and user.is_authenticated:
+        skill_list = [s.strip() for s in user.skills.split(",") if s.strip()]  # split the text field into list
         q = Q()
         for skill in skill_list:
-            q |= Q(skills__icontains=skill)
+            q |= Q(skills__icontains=skill)  # assuming JobPosting.skills is also a text field
         jobs = jobs.filter(q)
     if remote:
         jobs = jobs.filter(remote_or_onsite__icontains=remote)
