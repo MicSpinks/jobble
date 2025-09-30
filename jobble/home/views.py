@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from jobs.models import JobPosting
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def index(request):
@@ -46,5 +48,9 @@ def jobs(request):
     return render(request, 'home/jobs.html', {'jobs': jobs})
 
 def maps(request):
- return render(request, 'home/maps.html')
+    return render(request, 'home/maps.html')
+
+@login_required
+def messages(request):
+    return render(request, 'home/messages.html')
 

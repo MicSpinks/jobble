@@ -26,3 +26,6 @@ def searchcandidates(request):
 
 def organizeapplicants(request):
  return render(request, 'Rhome/organizeapplicants.html')
+
+def messages(request):
+	return render(request, 'Rhome/messages.html')
