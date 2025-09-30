@@ -3,8 +3,7 @@ def user_template(request):
     Injects the correct base template depending on the user.
     """
     if request.user.is_authenticated:
-        username = request.user.username.lower()
-        if username == "admin":
+        if request.user.is_superuser:
             return {"base_template": "baseA.html"}   # special admin template
         elif getattr(request.user, "role", "").lower() == "recruiter":
             return {"base_template": "baseR.html"}   # recruiter template
