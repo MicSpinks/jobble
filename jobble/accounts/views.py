@@ -48,15 +48,25 @@ def edit_profile(request):
     user = request.user
     if request.method == 'GET':
         form = ProfileForm(instance=user)
+        # split stored links into a list for individual input boxes
+        links_list = user.links.splitlines() if user.links else []
         template_data['form'] = form
+        template_data['links_list'] = links_list
         return render(request, 'accounts/profile_edit.html', {'template_data': template_data})
     else:
-        form = ProfileForm(request.POST, instance=user)
+        # collect multiple inputs named 'links' and join them into the single TextField
+        links_list = request.POST.getlist('links')
+        post = request.POST.copy()
+        # filter empty strings and join with newline so existing logic and templates continue to work
+        post['links'] = '\n'.join([l.strip() for l in links_list if l and l.strip()])
+
+        form = ProfileForm(post, instance=user)
         if form.is_valid():
             form.save()
             return redirect('accounts.profile_detail', username=user.username)
         else:
             template_data['form'] = form
+            template_data['links_list'] = links_list
             return render(request, 'accounts/profile_edit.html', {'template_data': template_data})
 
 
@@ -64,6 +74,25 @@ def profile_detail(request, username):
     # public profile view; recruiters may view limited fields depending on privacy flags
     user = get_object_or_404(__import__('django.contrib.auth').contrib.auth.get_user_model(), username=username)
     template_data = {'profile_user': user}
+    # build a links_list for the template: split stored text by lines and normalize hrefs
+    links_list = []
+    raw = (user.links or '').strip()
+    if raw:
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            href = line
+            # simple email detection
+            if '@' in line and not line.lower().startswith(('http://', 'https://', 'www.')):
+                href = 'mailto:' + line
+            elif line.startswith('www.'):
+                href = 'http://' + line
+            elif not line.startswith(('http://', 'https://', 'mailto:')):
+                # if it's not clearly an url, prepend http:// to be safe
+                href = 'http://' + line
+            links_list.append({'href': href, 'text': line})
+    template_data['links_list'] = links_list
     # explicitly choose base template for the viewer so recruiters see recruiter layout
     if request.user.is_authenticated and getattr(request.user, 'role', '').lower() == 'recruiter':
         template_data['base_template'] = 'baseR.html'

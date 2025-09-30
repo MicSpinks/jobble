@@ -35,7 +35,15 @@
 
   {% if template_data.profile_user.show_links %}
   <h4>Links</h4>
-  <p>{{ template_data.profile_user.links|linebreaks }}</p>
+    {% if template_data.links_list %}
+      <ul>
+        {% for l in template_data.links_list %}
+          <li><a href="{{ l.href }}" target="_blank" rel="noopener noreferrer">{{ l.text }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No links provided.</p>
+    {% endif %}
   {% endif %}
 
 </div>
