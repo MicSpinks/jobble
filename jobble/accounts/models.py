@@ -11,6 +11,8 @@ class CustomUser(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="user")
     # Profile fields for users (visible to recruiters depending on privacy flags)
+    fname = models.CharField(max_length=30, blank=True, default='')
+    lname = models.CharField(max_length=30, blank=True, default='')
     headline = models.CharField(max_length=255, blank=True, default='')
     skills = models.TextField(blank=True, default='')
     education = models.TextField(blank=True, default='')

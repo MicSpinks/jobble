@@ -10,10 +10,12 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = [
-            'headline', 'skills', 'education', 'work_experience', 'location', 'links',
+            'fname', 'lname', 'headline', 'skills', 'education', 'work_experience', 'location', 'links',
             'show_headline', 'show_skills', 'show_education', 'show_work_experience', 'show_location', 'show_links'
         ]
         widgets = {
+            'fname': forms.TextInput(attrs={'class': 'form-control'}),
+            'lname': forms.TextInput(attrs={'class': 'form-control'}),
             'headline': forms.TextInput(attrs={'class': 'form-control'}),
             'skills': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'education': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),

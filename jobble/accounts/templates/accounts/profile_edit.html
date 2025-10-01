@@ -6,6 +6,13 @@
   <form method="post">
     {% csrf_token %}
     <div class="mb-3">
+      {{ template_data.form.fname.label_tag }}
+      {{ template_data.form.fname }}
+
+      {{ template_data.form.lname.label_tag }}
+      {{ template_data.form.lname }}
+    </div>
+    <div class="mb-3">
       {{ template_data.form.headline.label_tag }}
       {{ template_data.form.headline }}
     </div>
@@ -15,11 +22,55 @@
     </div>
     <div class="mb-3">
       {{ template_data.form.education.label_tag }}
-      {{ template_data.form.education }}
+      <div id="education-container">
+        {% if template_data.education_list is not None %}
+          {% if template_data.education_list %}
+            {% for line in template_data.education_list %}
+              <div class="input-group mb-2 edu-row">
+                <input type="text" name="education_lines" class="form-control" value="{{ line }}" />
+                <button type="button" class="btn btn-outline-danger remove-edu">Remove</button>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="input-group mb-2 edu-row">
+              <input type="text" name="education_lines" class="form-control" value="" />
+              <button type="button" class="btn btn-outline-danger remove-edu">Remove</button>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="input-group mb-2 edu-row">
+            <input type="text" name="education_lines" class="form-control" value="" />
+            <button type="button" class="btn btn-outline-danger remove-edu">Remove</button>
+          </div>
+        {% endif %}
+      </div>
+      <button id="add-education" type="button" class="btn btn-secondary btn-sm">Add education line</button>
     </div>
     <div class="mb-3">
       {{ template_data.form.work_experience.label_tag }}
-      {{ template_data.form.work_experience }}
+      <div id="work-container">
+        {% if template_data.work_list is not None %}
+          {% if template_data.work_list %}
+            {% for line in template_data.work_list %}
+              <div class="input-group mb-2 work-row">
+                <input type="text" name="work_lines" class="form-control" value="{{ line }}" />
+                <button type="button" class="btn btn-outline-danger remove-work">Remove</button>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="input-group mb-2 work-row">
+              <input type="text" name="work_lines" class="form-control" value="" />
+              <button type="button" class="btn btn-outline-danger remove-work">Remove</button>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="input-group mb-2 work-row">
+            <input type="text" name="work_lines" class="form-control" value="" />
+            <button type="button" class="btn btn-outline-danger remove-work">Remove</button>
+          </div>
+        {% endif %}
+      </div>
+      <button id="add-work" type="button" class="btn btn-secondary btn-sm">Add work line</button>
     </div>
     <div class="mb-3">
       {{ template_data.form.location.label_tag }}
@@ -82,6 +133,32 @@ document.addEventListener('click', function(e){
   }
   if(e.target && e.target.classList && e.target.classList.contains('remove-link')){
     const row = e.target.closest('.link-row');
+    if(row) row.remove();
+  }
+  // education add/remove
+  if(e.target && e.target.id === 'add-education'){
+    const container = document.getElementById('education-container');
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2 edu-row';
+    div.innerHTML = '<input type="text" name="education_lines" class="form-control" value="" />'
+                  + '<button type="button" class="btn btn-outline-danger remove-edu">Remove</button>';
+    container.appendChild(div);
+  }
+  if(e.target && e.target.classList && e.target.classList.contains('remove-edu')){
+    const row = e.target.closest('.edu-row');
+    if(row) row.remove();
+  }
+  // work experience add/remove
+  if(e.target && e.target.id === 'add-work'){
+    const container = document.getElementById('work-container');
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2 work-row';
+    div.innerHTML = '<input type="text" name="work_lines" class="form-control" value="" />'
+                  + '<button type="button" class="btn btn-outline-danger remove-work">Remove</button>';
+    container.appendChild(div);
+  }
+  if(e.target && e.target.classList && e.target.classList.contains('remove-work')){
+    const row = e.target.closest('.work-row');
     if(row) row.remove();
   }
 });

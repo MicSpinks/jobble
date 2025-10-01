@@ -5,7 +5,7 @@ from .models import CustomUser
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     # Show role in list view
-    list_display = ("username", "email", "first_name", "last_name", "is_staff", "role")
+    list_display = ("username", "email", "fname", "lname", "is_staff", "role")
 
     # Add role to the user edit form in admin
     fieldsets = UserAdmin.fieldsets + (

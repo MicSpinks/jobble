@@ -13,8 +13,8 @@
 					<h5 class="card-title">{{ user.username }}</h5>
 					<h6 class="card-subtitle mb-2 text-muted">{{ user.email }}</h6>
 					<p class="card-text">
-						<strong>First name:</strong> {{ user.first_name|default:"—" }}<br>
-						<strong>Last name:</strong> {{ user.last_name|default:"—" }}<br>
+						<strong>First name:</strong> {{ user.fname|default:"—" }}<br>
+						<strong>Last name:</strong> {{ user.lname|default:"—" }}<br>
 						<strong>Date joined:</strong> {{ user.date_joined|date:"M d, Y H:i" }}<br>
 						<strong>Active:</strong> {{ user.is_active|yesno:"Yes,No" }}<br>
 						<strong>Staff:</strong> {{ user.is_staff|yesno:"Yes,No" }}
