@@ -2,14 +2,29 @@ from django.shortcuts import render, get_object_or_404, redirect
 from jobs.models import JobPosting
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-
+from jobs.models import JobPosting  
 
 # Create your views here.
+
 def index(request):
-    template_data = {}
-    template_data['title'] = 'Jobble'
+    template_data = {'title': 'Jobble'}
+    user = request.user
+    jobs = JobPosting.objects.all().order_by('-date_posted')
+
+    # Auto-filter based on user’s skills if logged in
+    if user.is_authenticated and hasattr(user, "skills") and user.skills:
+        skill_list = [s.strip() for s in user.skills.split(",") if s.strip()]
+        q = Q()
+        for skill in skill_list:
+            q |= Q(skills__icontains=skill)
+        jobs = jobs.filter(q)
+
+    jobs = jobs[:6]  # limit results for homepage.
+
     return render(request, 'home/index.html', {
-    'template_data': template_data})
+        'template_data': template_data,
+        'jobs': jobs,
+    })
 
 def applications(request):
  return render(request, 'home/applications.html')
