@@ -19,7 +19,7 @@ def index(request):
             q |= Q(skills__icontains=skill)
         jobs = jobs.filter(q)
 
-    jobs = jobs[:6]  # limit results for homepage
+    jobs = jobs[:6]  # limit results for homepage.
 
     return render(request, 'home/index.html', {
         'template_data': template_data,
