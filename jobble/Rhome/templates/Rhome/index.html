@@ -10,9 +10,41 @@
     <div class="container">
     <div class="row mt-3">
     <div class="col mx-auto text-center mb-3">
-        <h4>Welcome to the best recruiter store!!</h4>
+        <h4>Recommendations</h4>
     </div>
     </div>
 </div>
+
+	{% if candidates %}
+		<div class="row">
+			{% for c in candidates %}
+			<div class="col-md-6 mb-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<h4 class="card-title"><a href="{% url 'accounts.profile_detail' c.username %}">{{ c.username }}</a></h4>
+						{% if c.show_headline and c.headline %}
+						<h5><u>Headline:</u></h5>
+						<p>{{ c.headline }}</p>
+						{% endif %}
+
+						{% if c.show_skills and c.skills %}
+						<h5><u>Skills:</u></h5>
+						<p>{{ c.skills|linebreaksbr }}</p>
+						{% endif %}
+
+						{% if c.show_location and c.location %}
+						<h5><u>Location:</u></h5>
+						<p>{{ c.location }}</p>
+						{% endif %}
+
+						<a href="{% url 'accounts.profile_detail' c.username %}" class="btn btn-outline-secondary btn-sm">View profile</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="alert alert-info">No candidates found.</div>
+	{% endif %}
 </div>
 {% endblock content %}
