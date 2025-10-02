@@ -6,6 +6,7 @@ from jobs.models import JobPosting
 
 # Create your views here.
 
+@login_required
 def index(request):
     template_data = {'title': 'Jobble'}
     user = request.user
