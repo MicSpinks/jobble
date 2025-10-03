@@ -10,3 +10,12 @@ def user_template(request):
         else:
             return {"base_template": "base.html"}    # regular user
     return {"base_template": "base.html"}           # default for anonymous users
+
+def redirect_authenticated_users(request):
+    """
+    Redirect authenticated users to dashboard when they visit the landing page
+    """
+    if request.user.is_authenticated and request.path == '/':
+        from django.shortcuts import redirect
+        return redirect('home.dashboard')
+    return {}

@@ -6,6 +6,13 @@ from jobs.models import JobPosting
 
 # Create your views here.
 
+#Landing page for unregistered users
+def landing(request):
+    if request.user.is_authenticated:
+        return redirect('home.index')
+    return render(request, 'home/landing.html')
+
+
 @login_required
 def index(request):
     template_data = {'title': 'Jobble'}

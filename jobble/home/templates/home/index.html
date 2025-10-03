@@ -26,6 +26,7 @@
 </div>
 </div>
 
+<div class="container p-3">
   <div class="row">
     {% for job in jobs %}
       <div class="col-md-6 col-lg-4 mb-4">
@@ -42,15 +43,12 @@
               <strong>Posted by:</strong> {{ job.posted_by.username }} <br>
               <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
             </p>
-
-            {% if user.is_authenticated and user == job.posted_by %}
-              <a href="{% url 'edit_job' job.id %}" class="btn btn-warning btn-sm">Edit</a>
-            {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <p>No job recommendations yet. Try editing skills</a>!</p>
+      <p>There are currently no jobs available.</p>
     {% endfor %}
   </div>
+ </div> 
 {% endblock content %}
