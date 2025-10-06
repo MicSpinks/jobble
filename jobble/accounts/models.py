@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -27,3 +26,5 @@ class CustomUser(AbstractUser):
     show_work_experience = models.BooleanField(default=True)
     show_location = models.BooleanField(default=True)
     show_links = models.BooleanField(default=True)
+
+

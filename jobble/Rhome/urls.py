@@ -6,5 +6,4 @@ urlpatterns = [
     path('postjobs', views.postjobs, name='Rhome.postjobs'),
     path('searchcandidates', views.searchcandidates, name='Rhome.searchcandidates'),
     path('organizeapplicants', views.organizeapplicants, name='Rhome.organizeapplicants'),
-    path('messages', views.messages, name='Rhome.messages'),
 ]

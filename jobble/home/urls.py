@@ -5,5 +5,4 @@ urlpatterns = [
     path('applications', views.applications, name='home.applications'),
     path('jobs', views.jobs, name='home.jobs'),
     path('maps', views.maps, name='home.maps'),
-    path('messages', views.messages, name='home.messages'),
 ]
