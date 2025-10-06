@@ -23,10 +23,12 @@ def edit_job(request, job_id):
     return render(request, "jobs/edit_job.html", {"form": form, "job": job})
 
 
+from applications.forms import ApplicationForm
 
 def job_list(request):
     jobs = JobPosting.objects.all().order_by('-date_posted')
-    return render(request, 'jobs/job_list.html', {'jobs': jobs})
+    form = ApplicationForm()  # blank form for the modal
+    return render(request, 'jobs/job_list.html', {'jobs': jobs, 'form': form})
 
 def create_job(request):
     if request.method == 'POST':

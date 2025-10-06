@@ -28,3 +28,21 @@ class CustomUser(AbstractUser):
     show_links = models.BooleanField(default=True)
 
 
+    @property
+    def visible_attributes(self):
+        attrs = {}
+        if self.show_headline and self.headline:
+            attrs['Headline'] = self.headline
+        if self.show_skills and self.skills:
+            attrs['Skills'] = self.skills
+        if self.show_education and self.education:
+            attrs['Education'] = self.education
+        if self.show_work_experience and self.work_experience:
+            attrs['Work Experience'] = self.work_experience
+        if self.show_location and self.location:
+            attrs['Location'] = self.location
+        if self.show_links and self.links:
+            attrs['Links'] = self.links
+        return attrs
+
+

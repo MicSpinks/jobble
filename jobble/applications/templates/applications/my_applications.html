@@ -1,0 +1,21 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">My Applications</h1>
+
+  {% if applications %}
+    <div class="list-group">
+      {% for app in applications %}
+        <div class="list-group-item">
+          <h5>{{ app.job.title }} ({{ app.job.location }})</h5>
+          <p><strong>Note:</strong> {{ app.note|default:"No note" }}</p>
+          <p><small class="text-muted">Applied on {{ app.applied_at|date:"M d, Y H:i" }}</small></p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You have not applied to any jobs yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

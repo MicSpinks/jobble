@@ -6,9 +6,11 @@
   <h1 class="mb-4">Job Postings</h1>
 
   <!-- Post New Job button -->
-  <div class="mb-4">
-    <a href="{% url 'create_job' %}" class="btn btn-primary">+ Post a New Job</a>
-  </div>
+  {% if user.is_authenticated and user.role == 'recruiter' %}
+    <div class="mb-4">
+      <a href="{% url 'create_job' %}" class="btn btn-primary">+ Post a New Job</a>
+    </div>
+  {% endif %}
 
   <div class="row">
     {% for job in jobs %}
@@ -27,9 +29,12 @@
               <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
             </p>
 
+            <!-- Edit button for poster -->
             {% if user.is_authenticated and user == job.posted_by %}
               <a href="{% url 'edit_job' job.id %}" class="btn btn-warning btn-sm">Edit</a>
             {% endif %}
+
+
           </div>
         </div>
       </div>

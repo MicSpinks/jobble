@@ -1,0 +1,38 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Applicants for Your Jobs</h1>
+
+  {% if applications %}
+    {% regroup applications by job as job_list %}
+
+    {% for job_group in job_list %}
+      <div class="mb-3">
+        <!-- Job header as a clickable button -->
+        <button class="btn btn-outline-primary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#job-{{ forloop.counter }}" aria-expanded="false" aria-controls="job-{{ forloop.counter }}">
+          {{ job_group.grouper.title }} ({{ job_group.grouper.location }})
+        </button>
+
+        <!-- Collapsible applicants list -->
+        <div class="collapse mt-2" id="job-{{ forloop.counter }}">
+          <div class="list-group">
+            {% for app in job_group.list %}
+              <div class="list-group-item mb-2">
+                <p><strong>Applicant:</strong> {{ app.applicant.username }}</p>
+                <p><strong>Note:</strong> {{ app.note|default:"No note" }}</p>
+                {% for label, value in app.applicant.visible_attributes.items %}
+                  <p><strong>{{ label }}:</strong> {{ value }}</p>
+                {% endfor %}
+                <p><small class="text-muted">Applied on {{ app.applied_at|date:"M d, Y H:i" }}</small></p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No applicants yet for your jobs.</p>
+  {% endif %}
+</div>
+{% endblock %}

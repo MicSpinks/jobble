@@ -25,4 +25,5 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('jobs/', include('jobs.urls')),
     path("messages/", include("messaging.urls")),
+    path('applications/', include('applications.urls', namespace='applications')),
 ]

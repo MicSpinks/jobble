@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'jobs',
     'Ahome',
     'messaging', 
+    'applications',
 ]
 
 MIDDLEWARE = [
