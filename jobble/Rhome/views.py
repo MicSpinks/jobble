@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db import models
 from django.contrib.auth import get_user_model
 from jobs.models import JobPosting
 from django.db.models import Q
+from .models import SavedSearch
+
 
 User = get_user_model()
 
@@ -38,20 +40,50 @@ def postjobs(request):
  return render(request, 'Rhome/postjobs.html')
 
 def searchcandidates(request):
-	from django.contrib.auth import get_user_model
-	User = get_user_model()
-	query = request.GET.get('q', '').strip()
-	candidates = User.objects.filter(role='user')
-	if query:
-		# simple search across username, headline, skills, location
-		candidates = candidates.filter(
-			models.Q(username__icontains=query) |
-			models.Q(headline__icontains=query) |
-			models.Q(skills__icontains=query) |
-			models.Q(location__icontains=query)
-		)
-	# pass candidates to template
-	return render(request, 'Rhome/searchcandidates.html', {'candidates': candidates, 'query': query})
+    User = get_user_model()
+    query = request.GET.get('q', '').strip()
+    save_search_name = request.GET.get('save_search', '').strip()
+    action = request.GET.get('action', '').strip()
+
+    candidates = User.objects.filter(role='user')
+
+    # perform the search
+    if query:
+        candidates = candidates.filter(
+            models.Q(username__icontains=query) |
+            models.Q(headline__icontains=query) |
+            models.Q(skills__icontains=query) |
+            models.Q(location__icontains=query)
+        )
+
+    if action == "save" and query:
+        if save_search_name:
+            SavedSearch.objects.create(
+                user=request.user,
+                name=save_search_name,
+                query=query
+            )
+        else:
+            SavedSearch.objects.create(
+                user=request.user,
+                name=query,
+                query=query
+            )
+
+    # always load this user's saved searches
+    saved_searches = SavedSearch.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, 'Rhome/searchcandidates.html', {
+        'candidates': candidates,
+        'query': query,
+        'saved_searches': saved_searches,
+    })
+
+def delete_saved_search(request, search_id):
+    """Delete a saved search belonging to the current user."""
+    saved_search = get_object_or_404(SavedSearch, id=search_id, user=request.user)
+    saved_search.delete()
+    return redirect('Rhome.searchcandidates')
 
 def organizeapplicants(request):
  return render(request, 'Rhome/organizeapplicants.html')

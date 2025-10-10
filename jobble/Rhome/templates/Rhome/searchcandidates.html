@@ -6,9 +6,30 @@
 	<form method="get" class="mb-4">
 		<div class="input-group">
 			<input name="q" value="{{ query }}" class="form-control" placeholder="Search by name, headline, skills, location...">
-			<button class="btn btn-primary" type="submit">Search</button>
+
+			<input type="text" name="save_search" class="form-control" placeholder="Name this search (optional)">
+
+			<button class="btn btn-primary" type="submit" name="action" value="search">Search</button>
+			<button class="btn btn-success" type="submit" name="action" value="save">Save Search</button>
 		</div>
 	</form>
+
+
+	<ul>
+		{% for s in saved_searches %}
+			<li class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<a href="?q={{ s.query }}">{{ s.name|default:s.query }}</a>
+				<small class="text-muted">saved {{ s.created_at|date:"Y-m-d H:i" }}</small>
+			</div>
+
+			<form method="post" action="{% url 'delete_saved_search' s.id %}" style="margin:0;">
+				{% csrf_token %}
+				<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this saved search?');">Delete</button>
+			</form>
+			</li>
+		{% endfor %}
+	</ul>
 
 	{% if candidates %}
 		<div class="row">
