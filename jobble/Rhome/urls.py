@@ -7,6 +7,6 @@ urlpatterns = [
     path('searchcandidates', views.searchcandidates, name='Rhome.searchcandidates'),
     path('organizeapplicants', views.organizeapplicants, name='Rhome.organizeapplicants'),
     path('delete_saved_search/<int:search_id>/', views.delete_saved_search, name='delete_saved_search'),
-    
+    path('save_search/', views.save_search, name='save_search'),
 
 ]

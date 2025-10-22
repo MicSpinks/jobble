@@ -43,9 +43,6 @@ def postjobs(request):
 def searchcandidates(request):
     User = get_user_model()
     query = request.GET.get('q', '').strip()
-    save_search_name = request.GET.get('save_search', '').strip()
-    action = request.GET.get('action', '').strip()
-
     candidates = User.objects.filter(role='user')
 
     # perform the search
@@ -56,23 +53,6 @@ def searchcandidates(request):
             models.Q(skills__icontains=query) |
             models.Q(location__icontains=query)
         )
-        numCandidates = len(candidates)
-
-    if action == "save" and query:
-        if save_search_name:
-            SavedSearch.objects.create(
-                user=request.user,
-                name=save_search_name,
-                query=query,
-                num_of_matches=numCandidates
-            )
-        else:
-            SavedSearch.objects.create(
-                user=request.user,
-                name=query,
-                query=query,
-                num_of_matches=numCandidates
-            )
 
     # always load this user's saved searches
     saved_searches = SavedSearch.objects.filter(user=request.user).order_by('-created_at')
@@ -82,6 +62,29 @@ def searchcandidates(request):
         'query': query,
         'saved_searches': saved_searches,
     })
+
+def save_search(request):
+    if request.method == 'POST':
+        query = request.POST.get('query', '').strip()
+        save_search_name = request.POST.get('save_search', '').strip()
+
+        if query:
+            candidates = User.objects.filter(role='user').filter(
+                models.Q(username__icontains=query) |
+                models.Q(headline__icontains=query) |
+                models.Q(skills__icontains=query) |
+                models.Q(location__icontains=query)
+            )
+            numCandidates = len(candidates)
+
+            SavedSearch.objects.create(
+                user=request.user,
+                name=save_search_name if save_search_name else query,
+                query=query,
+                num_of_matches=numCandidates
+            )
+
+    return redirect('Rhome.searchcandidates')
 
 def delete_saved_search(request, search_id):
     """Delete a saved search belonging to the current user."""
