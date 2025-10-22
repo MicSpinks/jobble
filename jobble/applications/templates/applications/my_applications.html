@@ -11,7 +11,13 @@
           <h5>{{ app.job.title }} ({{ app.job.location }})</h5>
           <p><strong>Note:</strong> {{ app.note|default:"No note" }}</p>
           <p><small class="text-muted">Applied on {{ app.applied_at|date:"M d, Y H:i" }}</small></p>
+          <p>Application Status: {{ app.get_status_display }}</p>
+          <form method="POST" action="{% url 'applications:withdraw_application' app.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Withdraw Application?</button>
+            </form>
         </div>
+        <br>
       {% endfor %}
     </div>
   {% else %}

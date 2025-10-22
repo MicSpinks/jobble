@@ -194,3 +194,18 @@ h4 {
     border-color: #48698f;
     color: white;
 }
+
+.custom-outline-btn {
+  border-color: #202331 !important;  /* green outline */
+  color: #202331 !important;         /* green text */
+  font-size: 1.5em !important;
+  color: #fff !important;  
+}
+
+.custom-outline-btn:hover,
+.custom-outline-btn:active {
+  background-color: #202331 !important;  /* green background */              /* white text */
+  border-color: #202331 !important;      /* keep border green */
+  box-shadow: none !important;            /* optionally remove shadow */
+  color: #B3A369 !important;  
+}

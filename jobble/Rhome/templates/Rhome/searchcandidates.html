@@ -21,6 +21,7 @@
 			<div>
 				<a href="?q={{ s.query }}">{{ s.name|default:s.query }}</a>
 				<small class="text-muted">saved {{ s.created_at|date:"Y-m-d H:i" }}</small>
+				<small>Number of Candidates: {{ s.num_of_matches }}</small>
 			</div>
 
 			<form method="post" action="{% url 'delete_saved_search' s.id %}" style="margin:0;">

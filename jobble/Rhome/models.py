@@ -7,6 +7,9 @@ class SavedSearch(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_searches')
     name = models.CharField(max_length=100, blank=True)
     query = models.CharField(max_length=255)
+    num_of_matches = models.IntegerField(
+        default = 0,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

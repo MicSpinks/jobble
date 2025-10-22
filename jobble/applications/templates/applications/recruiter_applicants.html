@@ -8,19 +8,36 @@
     {% regroup applications by job as job_list %}
 
     {% for job_group in job_list %}
-      <div class="mb-3">
+      <div class="mb-3" style="background-color: #202331; color: #fff !important; padding: 5px; border-radius: 5px;">
         <!-- Job header as a clickable button -->
-        <button class="btn btn-outline-primary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#job-{{ forloop.counter }}" aria-expanded="false" aria-controls="job-{{ forloop.counter }}">
-          {{ job_group.grouper.title }} ({{ job_group.grouper.location }})
+        <button class="btn btn-outline-primary custom-outline-btn w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#job-{{ forloop.counter }}" aria-expanded="false" aria-controls="job-{{ forloop.counter }}">
+          {{ job_group.grouper.title }} – {{ job_group.grouper.location }}
         </button>
 
         <!-- Collapsible applicants list -->
         <div class="collapse mt-2" id="job-{{ forloop.counter }}">
           <div class="list-group">
             {% for app in job_group.list %}
-              <div class="list-group-item mb-2">
+              <div class="list-group-item mb-2" style="border-radius: 5px; margin-left: 5px; margin-right: 5px; margin-top: 5px;">
                 <p><strong>Applicant:</strong> {{ app.applicant.username }}</p>
                 <p><strong>Note:</strong> {{ app.note|default:"No note" }}</p>
+
+                <form method="post"
+                      action="{% url 'applications:update_status' app.id %}"
+                      class="status-form d-flex align-items-center gap-2"
+                      data-app-id="{{ app.id }}">
+                  {% csrf_token %}
+                  <label class="mb-0 fw-semibold">Status:</label>
+                  <select name="status"
+                          class="form-select form-select-sm status-dropdown w-auto"
+                          data-url="{% url 'applications:update_status' app.id %}">
+                    {% for code, label in app.STATUS_CHOICES %}
+                      <option value="{{ code }}" {% if app.status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+
+
                 {% for label, value in app.applicant.visible_attributes.items %}
                   <p><strong>{{ label }}:</strong> {{ value }}</p>
                 {% endfor %}
@@ -35,4 +52,43 @@
     <p>No applicants yet for your jobs.</p>
   {% endif %}
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const dropdowns = document.querySelectorAll('.status-dropdown');
+
+    dropdowns.forEach(function (dropdown) {
+      dropdown.addEventListener('change', function () {
+
+        const url = this.dataset.url;
+        const form = this.closest('form');
+        const formData = new FormData(form);
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not OK');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Status updated:', data);  // ✅ Success
+        })
+        .catch(error => {
+          console.error('Error updating status:', error);
+        });
+      });
+    });
+  });
+</script>
+
 {% endblock %}

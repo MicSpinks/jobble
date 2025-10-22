@@ -36,6 +36,7 @@ def index(request):
     return render(request, "Rhome/index.html", {
         "candidates": candidates,
     })
+    
 def postjobs(request):
  return render(request, 'Rhome/postjobs.html')
 
@@ -55,19 +56,22 @@ def searchcandidates(request):
             models.Q(skills__icontains=query) |
             models.Q(location__icontains=query)
         )
+        numCandidates = len(candidates)
 
     if action == "save" and query:
         if save_search_name:
             SavedSearch.objects.create(
                 user=request.user,
                 name=save_search_name,
-                query=query
+                query=query,
+                num_of_matches=numCandidates
             )
         else:
             SavedSearch.objects.create(
                 user=request.user,
                 name=query,
-                query=query
+                query=query,
+                num_of_matches=numCandidates
             )
 
     # always load this user's saved searches
