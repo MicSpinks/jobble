@@ -8,18 +8,19 @@
 			<input name="q" value="{{ query }}" class="form-control" placeholder="Search by name, headline, skills, location...">
 			<button class="btn btn-primary" type="submit">Search</button>
 		</div>
-	</form>
-
 	{% if query %}
 	<form method="post" action="{% url 'save_search' %}" class="mb-4">
 		{% csrf_token %}
-		<div class="input-group">
-			<input type="hidden" name="query" value="{{ query }}">
-			<input type="text" name="save_search" class="form-control" placeholder="Name this search (optional)">
-			<button class="btn btn-success" type="submit">Save Search</button>
-		</div>
+		{% if already_saved == False %}
+			<div class="input-group">
+				<input type="hidden" name="query" value="{{ query }}">
+				<input type="text" name="save_search" class="form-control" placeholder="Name this search (optional)">
+				<button class="btn btn-success" type="submit">Save Search</button>
+			</div>
+		{% endif %}
 	</form>
 	{% endif %}
+	
 
 
 	<ul>
