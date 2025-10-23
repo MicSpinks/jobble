@@ -1,18 +1,43 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.http import HttpResponse
+import csv
 from .models import CustomUser
 
+
 @admin.register(CustomUser)
-class CustomUserAdmin(UserAdmin):
-    # Show role in list view
-    list_display = ("username", "email", "fname", "lname", "is_staff", "role")
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ("username", "email", "role", "fname", "lname", "location")
+    search_fields = ("username", "email", "fname", "lname", "skills")
+    actions = ["export_as_csv"]
 
-    # Add role to the user edit form in admin
-    fieldsets = UserAdmin.fieldsets + (
-        ("Role", {"fields": ("role",)}),
-    )
+    def export_as_csv(self, request, queryset):
+        """Admin action to export selected CustomUser objects to CSV."""
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="users.csv"'
 
-    # Add role to the create form in admin
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ("Role", {"fields": ("role",)}),
-    )
+        writer = csv.writer(response)
+        
+        writer.writerow([
+            "Username", "Email", "Role", "First Name", "Last Name",
+            "Headline", "Skills", "Education", "Work Experience",
+            "Location", "Links"
+        ])
+
+        for user in queryset:
+            writer.writerow([
+                user.username,
+                user.email,
+                user.role,
+                user.fname,
+                user.lname,
+                user.headline,
+                user.skills,
+                user.education,
+                user.work_experience,
+                user.location,
+                user.links
+            ])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected Users to CSV"
