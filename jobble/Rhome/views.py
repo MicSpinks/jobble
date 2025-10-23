@@ -57,6 +57,18 @@ def searchcandidates(request):
     # always load this user's saved searches
     saved_searches = SavedSearch.objects.filter(user=request.user).order_by('-created_at')
 
+    for search in saved_searches:
+        current_matches = User.objects.filter(role='user').filter(
+            models.Q(username__icontains=search.query) |
+            models.Q(headline__icontains=search.query) |
+            models.Q(skills__icontains=search.query) |
+            models.Q(location__icontains=search.query)
+        ).count()
+        
+        if search.num_of_matches != current_matches:
+            search.num_of_matches = current_matches
+            search.save()
+
     return render(request, 'Rhome/searchcandidates.html', {
         'candidates': candidates,
         'query': query,
