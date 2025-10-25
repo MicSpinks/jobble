@@ -57,8 +57,6 @@ def searchcandidates(request):
     # always load this user's saved searches
     saved_searches = SavedSearch.objects.filter(user=request.user).order_by('-created_at')
     already_saved = any(s.query.lower() == query.lower() for s in saved_searches)
-    if already_saved == True:
-        print("saved")
     for search in saved_searches:
         current_matches = User.objects.filter(role='user').filter(
             models.Q(username__icontains=search.query) |

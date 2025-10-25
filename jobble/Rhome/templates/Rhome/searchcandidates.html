@@ -8,6 +8,7 @@
 			<input name="q" value="{{ query }}" class="form-control" placeholder="Search by name, headline, skills, location...">
 			<button class="btn btn-primary" type="submit">Search</button>
 		</div>
+	</form>
 	{% if query %}
 	<form method="post" action="{% url 'save_search' %}" class="mb-4">
 		{% csrf_token %}
