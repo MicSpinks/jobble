@@ -1,0 +1,76 @@
+{% extends base_template %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+	<h1 class="mb-4">Search Candidates</h1>
+	<form method="get" class="mb-4">
+		<div class="input-group">
+			<input name="q" value="{{ query }}" class="form-control" placeholder="Search by name, headline, skills, location...">
+			<button class="btn btn-primary" type="submit">Search</button>
+		</div>
+	</form>
+	{% if query %}
+	<form method="post" action="{% url 'save_search' %}" class="mb-4">
+		{% csrf_token %}
+		{% if already_saved == False %}
+			<div class="input-group">
+				<input type="hidden" name="query" value="{{ query }}">
+				<input type="text" name="save_search" class="form-control" placeholder="Name this search (optional)">
+				<button class="btn btn-success" type="submit">Save Search</button>
+			</div>
+		{% endif %}
+	</form>
+	{% endif %}
+	
+
+
+	<ul>
+		{% for s in saved_searches %}
+			<li class="d-flex justify-content-between align-items-center mb-2">
+			<div>
+				<a href="?q={{ s.query }}">{{ s.name|default:s.query }}</a>
+				<small class="text-muted">saved {{ s.created_at|date:"Y-m-d H:i" }}</small>
+				<small>Number of Candidates: {{ s.num_of_matches }}</small>
+			</div>
+
+			<form method="post" action="{% url 'delete_saved_search' s.id %}" style="margin:0;">
+				{% csrf_token %}
+				<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this saved search?');">Delete</button>
+			</form>
+			</li>
+		{% endfor %}
+	</ul>
+
+	{% if candidates %}
+		<div class="row">
+			{% for c in candidates %}
+			<div class="col-md-6 mb-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<h4 class="card-title"><a href="{% url 'accounts.profile_detail' c.username %}">{{ c.username }}</a></h4>
+						{% if c.show_headline and c.headline %}
+						<h5><u>Headline:</u></h5>
+						<p>{{ c.headline }}</p>
+						{% endif %}
+
+						{% if c.show_skills and c.skills %}
+						<h5><u>Skills:</u></h5>
+						<p>{{ c.skills|linebreaksbr }}</p>
+						{% endif %}
+
+						{% if c.show_location and c.location %}
+						<h5><u>Location:</u></h5>
+						<p>{{ c.location }}</p>
+						{% endif %}
+
+						<a href="{% url 'accounts.profile_detail' c.username %}" class="btn btn-outline-secondary btn-sm">View profile</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="alert alert-info">No candidates found.</div>
+	{% endif %}
+</div>
+{% endblock content %}
