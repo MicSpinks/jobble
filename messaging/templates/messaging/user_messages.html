@@ -1,0 +1,175 @@
+{% extends base_template %}
+{% block content %}
+
+<style>
+  /* === Georgia Tech Messages Page Styling === */
+  .messages-page {
+    background-color: #fdfdfd;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+    padding: 2rem 0;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 800;
+    color: #003057;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    font-weight: 700;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: 1rem 1.5rem;
+  }
+
+  .bg-success {
+    background-color: #003057 !important;
+    color: #fff !important;
+  }
+
+  .bg-success:hover {
+    background-color: #b3a369 !important;
+    color: #003057 !important;
+  }
+
+  .btn-success {
+    background-color: #b3a369;
+    border: none;
+    color: #003057;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success:hover {
+    background-color: #003057;
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .accordion-button {
+    background-color: #003057;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background-color: #b3a369;
+    color: #003057;
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+
+  .list-group-item {
+    background-color: #fff;
+    border: none;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f4f8;
+    border-radius: 0;
+  }
+
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  .list-group-item strong {
+    color: #003057;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+</style>
+
+<div class="container messages-page">
+  <h1>User Messages</h1>
+
+  <div class="accordion" id="userMessagesAccordion">
+
+    <!-- Send New Message -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-header bg-success">Send a New Message</div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_receiver" class="form-label">Receiver</label>
+            {{ form.receiver }}
+          </div>
+          <div class="mb-3">
+            <label for="id_content" class="form-label">Message</label>
+            {{ form.content }}
+          </div>
+          <button type="submit" class="btn btn-success">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Inbox -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingInboxUser">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInboxUser" aria-expanded="true" aria-controls="collapseInboxUser">
+          Inbox
+        </button>
+      </h2>
+      <div id="collapseInboxUser" class="accordion-collapse collapse show" aria-labelledby="headingInboxUser" data-bs-parent="#userMessagesAccordion">
+        <div class="accordion-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for msg in inbox %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ msg.sender.username }}</strong><br>
+                  {{ msg.content }}
+                </div>
+                <small class="text-muted">{{ msg.sent_at|date:"M d, Y H:i" }}</small>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">No messages yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sent -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingSentUser">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSentUser" aria-expanded="false" aria-controls="collapseSentUser">
+          Sent
+        </button>
+      </h2>
+      <div id="collapseSentUser" class="accordion-collapse collapse" aria-labelledby="headingSentUser" data-bs-parent="#userMessagesAccordion">
+        <div class="accordion-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for msg in sent %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  To <strong>{{ msg.receiver.username }}</strong><br>
+                  {{ msg.content }}
+                </div>
+                <small class="text-muted">{{ msg.sent_at|date:"M d, Y H:i" }}</small>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">You haven’t sent any messages yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

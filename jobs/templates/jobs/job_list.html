@@ -1,0 +1,119 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* 🎨 Scoped GT Theme Styling */
+  .job-postings-page {
+    background-color: #fdfdfd;
+    color: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+    padding: 2rem 0;
+  }
+
+  .job-postings-page h1 {
+    text-align: center;
+    font-weight: 800;
+    color: #003057; /* GT navy */
+    margin-bottom: 2rem;
+  }
+
+  .job-postings-page .btn-primary {
+    background-color: #b3a369; /* GT gold */
+    border: none;
+    color: #003057;
+    font-weight: 600;
+    transition: 0.3s ease;
+  }
+
+  .job-postings-page .btn-primary:hover {
+    background-color: #9b8a50;
+    color: #fff;
+  }
+
+  .job-postings-page .card {
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .job-postings-page .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .job-postings-page .card-title {
+    color: #003057;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  .job-postings-page .card-subtitle {
+    color: #5a5a5a;
+    font-size: 0.95rem;
+  }
+
+  .job-postings-page .card-text {
+    margin-top: 0.75rem;
+    color: #333;
+    font-size: 0.95rem;
+  }
+
+  .job-postings-page .btn-warning {
+    background-color: #b3a369;
+    border: none;
+    color: #003057;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+
+  .job-postings-page .btn-warning:hover {
+    background-color: #9b8a50;
+    color: #fff;
+  }
+</style>
+
+<div class="container job-postings-page">
+  <h1>Job Postings</h1>
+
+  {% if user.is_authenticated and user.role == 'recruiter' %}
+    <div class="text-center mb-4">
+      <a href="{% url 'create_job' %}" class="btn btn-primary">
+        + Post a New Job
+      </a>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    {% for job in jobs %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ job.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ job.location }}</h6>
+
+            <p class="card-text">
+              <strong>Salary:</strong> {{ job.salary_display }} <br>
+              <strong>Work Type:</strong> {{ job.get_remote_or_onsite_display }} <br>
+              <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }} <br>
+              <strong>Skills:</strong> {{ job.skills }} <br>
+              <strong>Posted by:</strong> {{ job.posted_by.username }} <br>
+              <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
+            </p>
+
+            {% if user.is_authenticated and user == job.posted_by %}
+              <a href="{% url 'edit_job' job.id %}" class="btn btn-warning btn-sm mt-2">Edit</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center mt-4">No job postings yet. Be the first to 
+        <a href="{% url 'create_job' %}" style="color:#b3a369; font-weight:600;">post one!</a>
+      </p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

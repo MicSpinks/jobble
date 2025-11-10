@@ -1,0 +1,108 @@
+{% extends base_template %}
+
+{% block content %}
+<style>
+  /* 🎨 Georgia Tech Theme - Simplified (no double box) */
+  .job-create-wrapper {
+    background-color: transparent; /* keep page blending with overall theme */
+    color: #003057;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .job-create-form {
+    background-color: #f5f8fc;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .job-create-form h2 {
+    color: #b8a970; /* GT gold */
+    font-weight: 700;
+  }
+
+  .job-create-form .form-label {
+    color: #003057;
+  }
+
+  .job-create-form input,
+  .job-create-form select,
+  .job-create-form textarea {
+    background-color: #f5f8fc;
+    color: #003057;
+    border: 1px solid #3a3f55;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .job-create-form input:focus,
+  .job-create-form select:focus,
+  .job-create-form textarea:focus {
+    border-color: #b3a369;
+    box-shadow: 0 0 5px rgba(179, 163, 105, 0.4);
+    background-color: #f5f8fc;
+  }
+
+  .job-create-form .btn-success {
+    background-color: #b3a369; /* GT gold */
+    border: none;
+    color: #003057;
+    font-weight: 600;
+  }
+
+  .job-create-form .btn-success:hover {
+    background-color: #9b8a50;
+    color: #003057;
+  }
+
+  .job-create-form .btn-secondary {
+    background-color: #003057;
+    border: none;
+    color: #f5f8fc;
+  }
+
+  .job-create-form .btn-secondary:hover {
+    background-color: #002244;
+  }
+
+  .form-text {
+    color: #003057;
+  }
+</style>
+
+<div class="container py-5 job-create-wrapper">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="job-create-form">
+        <h2 class="mb-4 text-center">Create Job Posting</h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                {{ field.label }}
+              </label>
+              {{ field }}
+              
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'job_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">Post Job</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

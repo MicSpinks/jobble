@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  /* --- Georgia Tech Inspired Modern Sign Up --- */
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #eef3f8;  /* soft blue-gray for contrast */
+    color: #1a1a1a;
+  }
+
+  .signup-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease;
+  }
+
+  h2 {
+    font-weight: 700;
+    text-align: center;
+    color: #003057; /* GT Navy */
+  }
+
+  .signup-subtitle {
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  label {
+    font-weight: 500;
+    color: #003057;
+  }
+
+  .form-control {
+    background: #f1f4f8;
+    border: 1px solid #c9d3e1;
+    border-radius: 10px;
+    padding: 12px;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #b3a369; /* GT Gold */
+    box-shadow: 0 0 0 2px rgba(179, 163, 105, 0.4);
+    background: #fff;
+  }
+
+  .btn-modern {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px 0;
+    background: #003057; /* Navy */
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-modern:hover {
+    background: #b3a369; /* Gold hover */
+    color: #003057;
+    transform: translateY(-2px);
+  }
+
+  .alert-danger {
+    background-color: #ffe8e8;
+    border: 1px solid #ffb3b3;
+    border-radius: 10px;
+    color: #a30000;
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .login-link a {
+    color: #003057;
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  .login-link a:hover {
+    color: #b3a369;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  input[name="email"] {
+  background-color: #f1f4f8;      /* soft GT background */
+  border: 2px solid #003057;      /* GT navy border */
+  border-radius: 10px;
+  padding: 12px;
+  color: #1a1a1a;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+input[name="email"]:focus {
+  border-color: #b3a369;          /* GT gold on focus */
+  box-shadow: 0 0 0 2px rgba(179, 163, 105, 0.4);
+  background: #fff;
+}
+</style>
+
+<div class="p-3 mt-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="signup-card">
+          <div class="card-body">
+            <h2>Create Account</h2>
+            <p class="signup-subtitle">Join the Jobble community</p>
+            <hr style="border-color: #e0e0e0;" />
+
+            {% if template_data.error %}
+            <div class="alert alert-danger" role="alert">
+              {{ template_data.error }}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+              {% csrf_token %}
+              {{ template_data.form.as_p }}
+
+              <div class="text-center">
+                <button type="submit" class="btn-modern">Sign Up</button>
+              </div>
+
+              <div class="login-link">
+                <p>Already have an account? 
+                  <a href="{% url 'accounts.login' %}">Log in</a>
+                </p>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

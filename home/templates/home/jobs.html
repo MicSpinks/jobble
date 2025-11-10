@@ -1,0 +1,203 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #eef3f8;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+  }
+
+  h1 {
+    color: #003057;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  /* Search form styling */
+  .job-search {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .job-search input[type=text],
+  .job-search input[type=number],
+  .job-search select {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid #dbe1eb;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .job-search button,
+  .job-search a#job-search-reset {
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .job-search button {
+    background-color: #003057;
+    color: #ffffff;
+    border: none;
+  }
+
+  .job-search button:hover {
+    background-color: #b3a369;
+    color: #003057;
+    transform: translateY(-2px);
+  }
+
+  .job-search a#job-search-reset {
+    background-color: #f1f4f8;
+    color: #003057;
+    border: 1px solid #dbe1eb;
+  }
+
+  .job-search a#job-search-reset:hover {
+    background-color: #003057;
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+
+  /* Job card styling */
+  .job-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    transition: all 0.3s ease;
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .job-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+  }
+
+  .job-card h5 {
+    color: #003057;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .job-card h6 {
+    color: #003057;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .job-card p {
+    margin-bottom: 0.4rem;
+    color: #333;
+  }
+
+  .job-card .text-muted {
+    color: #6c757d !important;
+  }
+
+  .btn-apply {
+    background-color: #003057;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-apply:hover {
+    background-color: #b3a369;
+    color: #003057;
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .job-card {
+    animation: fadeIn 0.4s ease;
+  }
+</style>
+
+<div class="container py-4">
+  <h1>Job Postings</h1>
+
+  <!-- Job Search Form -->
+  <form class="job-search" action="{% url 'home.jobs' %}" method="get">
+    <input name="titlequery" type="text" placeholder="Job Title..." value="{{ request.GET.titlequery }}">
+    <input name="locationquery" type="text" placeholder="Location..." value="{{ request.GET.locationquery }}">
+    
+    <select name="remote">
+      <option value="">Work Type</option>
+      <option value="onsite" {% if request.GET.remote == "onsite" %}selected{% endif %}>On-site</option>
+      <option value="hybrid" {% if request.GET.remote == "hybrid" %}selected{% endif %}>Hybrid</option>
+      <option value="remote" {% if request.GET.remote == "remote" %}selected{% endif %}>Remote</option>
+    </select>
+
+    <select name="visa">
+      <option value="">Visa</option>
+      <option value="yes" {% if request.GET.visa == "yes" %}selected{% endif %}>Yes</option>
+      <option value="no" {% if request.GET.visa == "no" %}selected{% endif %}>No</option>
+    </select>
+
+    <input type="number" name="minsalary" placeholder="Min Salary" value="{{ request.GET.minsalary }}">
+    
+    <button type="submit">Search</button>
+    <a id="job-search-reset" href="{% url 'home.jobs' %}">Reset</a>
+  </form>
+
+  <!-- Job Cards in a grid -->
+  <div class="row">
+    {% if jobs %}
+      {% for job in jobs %}
+        <div class="col-md-6 col-lg-4">
+          <div class="job-card">
+            <h5>{{ job.title }}</h5>
+            <h6>{{ job.location }}</h6>
+            <p><strong>Salary:</strong> {{ job.salary_display }}</p>
+            <p><strong>Work Type:</strong> {{ job.get_remote_or_onsite_display }}</p>
+            <p><strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }}</p>
+            <p><strong>Skills:</strong> {{ job.skills }}</p>
+            <p><strong>Posted by:</strong> {{ job.posted_by.username }}</p>
+            <p class="text-muted">{{ job.date_posted|date:"M d, Y" }}</p>
+
+            {% if user.is_authenticated and user.role == 'user' and user != job.posted_by %}
+              <button class="btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal{{ job.id }}">Apply</button>
+
+              <div class="modal fade" id="applyModal{{ job.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    {% include 'applications/apply_modal.html' %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-apps text-center">There are currently no jobs available.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

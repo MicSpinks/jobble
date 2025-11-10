@@ -1,0 +1,144 @@
+/* --- Sidebar container --- */
+.sidebar .testsvg img {
+  margin-left: 10%;
+}
+.sidebar {
+  height: 100vh;
+  width: 12vw;                   /* a little wider for comfort & readability */
+  min-width: 12vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 2rem 1rem;            /* more breathing space */
+  background-color: #181a25;     /* maintain your dark base */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.2);  /* subtle depth */
+  transition: width 0.3s ease;
+}
+
+/* Logo / top section */
+.sidebar .testsvg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.sidebar .testsvg img {
+  width: 60%;
+  height: auto;
+  display: block;
+}
+
+/* Divider lines */
+.sidebar hr {
+  width: 70%;
+  border: none;
+  border-top: 1px solid #2e2f39;
+  margin: 1.5rem 0;
+}
+
+/* Navigation list and links */
+.sidebar .nav {
+  width: 100%;
+  flex: 1;                      /* take up available vertical space */
+}
+.sidebar .nav .nav-item {
+  width: 100%;
+}
+.sidebar .nav .nav-link {
+  display: block;
+  width: 100%;
+  color: #e9e9e9;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;  /* switch font for links */
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sidebar .nav .nav-link:hover,
+.sidebar .nav .nav-link:focus {
+  background-color: #2e2f39;
+  color: #b3a369;             /* your accent color */
+  text-decoration: none;
+}
+.sidebar .nav .nav-link.active {
+  background-color: #3a3c45;
+  color: #b3a369;
+}
+
+/* Link container hover section (your .test wrapper) */
+.sidebar .test {
+  width: 100%;
+  height: auto;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sidebar .test:hover {
+  background-color: #2e2f39;
+}
+.sidebar .test a {
+  color: inherit;
+}
+.sidebar .test a:hover {
+  color: #b3a369;
+}
+
+/* Bottom section: Settings & Logout */
+.sidebar .test2 {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+.sidebar .test2 .nav-item,
+.sidebar .test2 .test {
+  width: 100%;
+}
+.sidebar .test2 .nav-link {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  color: #e9e9e9;
+}
+.sidebar .test2 .nav-link:hover {
+  background-color: #2e2f39;
+  color: #b3a369;
+}
+
+/* Main content area adjustment */
+.main-content {
+  margin-left: 12vw;  /* adjust to match new sidebar width */
+  padding: 2rem;
+  background-color: #eef3f8;
+  width: calc(100vw - 12vw);
+  min-height: 100vh;
+}
+
+/* Responsive tweak: collapse sidebar on narrow screens */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+    min-width: 60px;
+    padding: 1rem 0.5rem;
+  }
+  .sidebar .nav .nav-link {
+    padding: 0.75rem 0.5rem;
+    font-size: 0;
+  }
+  .sidebar .nav .nav-link::before {
+    content: attr(data-icon);
+    font-size: 1.2rem;
+    display: block;
+    color: #e9e9e9;
+    text-align: center;
+  }
+  .sidebar .nav .nav-link span {
+    display: none;
+  }
+  .main-content {
+    margin-left: 60px;
+    width: calc(100vw - 60px);
+    padding: 1rem;
+  }
+}

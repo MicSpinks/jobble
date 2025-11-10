@@ -1,0 +1,97 @@
+{% extends base_template %}
+{% block content %}
+<style>
+  /* 🎨 Georgia Tech Theme Styling */
+  .job-detail-container {
+    background-color: #fdfdfd;
+    color: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .job-detail-container .card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .job-detail-container .card-title {
+    color: #003057; /* GT navy */
+    font-weight: 800;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .job-detail-container .text-muted {
+    color: #555 !important;
+    font-size: 1.1rem;
+  }
+
+  .job-detail-container p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .job-detail-container strong {
+    color: #003057;
+  }
+
+  .job-detail-container .btn-info {
+    background-color: #b3a369; /* GT gold */
+    border: none;
+    color: #003057;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .job-detail-container .btn-info:hover {
+    background-color: #9b8a50;
+    color: #fff;
+  }
+
+  .job-detail-container .btn-secondary {
+    background-color: #003057;
+    border: none;
+    color: #fff;
+    transition: all 0.3s ease;
+  }
+
+  .job-detail-container .btn-secondary:hover {
+    background-color: #002244;
+  }
+</style>
+
+<div class="container py-5 job-detail-container">
+  <div class="card shadow-sm p-4">
+    <div class="card-body">
+      <h2 class="card-title">{{ job.title }}</h2>
+      <h5 class="text-muted mb-3">{{ job.company }}</h5>
+      <p><strong>Location:</strong> {{ job.location }}</p>
+      <p><strong>Posted by:</strong> {{ job.posted_by.username }}</p>
+      <p><small class="text-muted">Posted on {{ job.date_posted|date:"M d, Y" }}</small></p>
+
+      {% if job.description %}
+        <p><strong>Description:</strong><br>{{ job.description }}</p>
+      {% endif %}
+      {% if job.skills %}
+        <p><strong>Skills:</strong><br>{{ job.skills }}</p>
+      {% endif %}
+      {% if job.education %}
+        <p><strong>Education:</strong><br>{{ job.education }}</p>
+      {% endif %}
+      {% if job.work_experience %}
+        <p><strong>Work Experience:</strong><br>{{ job.work_experience }}</p>
+      {% endif %}
+      {% if job.links %}
+        <p>
+          <a href="{{ job.links }}" target="_blank" class="btn btn-info me-2">
+            More Info / Apply
+          </a>
+        </p>
+      {% endif %}
+
+      <a href="{% url 'job_list' %}" class="btn btn-secondary">Back to Listings</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

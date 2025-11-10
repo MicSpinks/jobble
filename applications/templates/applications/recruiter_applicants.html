@@ -1,0 +1,170 @@
+{% extends base_template %}
+
+{% block content %}
+
+<style>
+  /* === Georgia Tech Applicants Page Styling === */
+  .applicants-page {
+    background-color: #fdfdfd;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+    padding: 2rem 0;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 800;
+    color: #003057;
+    margin-bottom: 2rem;
+  }
+
+  .job-group {
+    background-color: #202331;
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .custom-outline-btn {
+    background-color: transparent;
+    border: 1px solid #b3a369;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .custom-outline-btn:hover {
+    background-color: #b3a369;
+    color: #003057;
+  }
+
+  .list-group-item {
+    background-color: #fff;
+    border-radius: 10px;
+    margin: 0.5rem 0;
+    padding: 1rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  }
+
+  .status-form {
+    margin-bottom: 0.5rem;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dropdown {
+    width: auto;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .status-dropdown:focus {
+    outline: none;
+    border-color: #003057;
+    box-shadow: 0 0 0 2px rgba(0,48,87,0.2);
+  }
+
+  p, label {
+    margin-bottom: 0.25rem;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  @media (max-width: 768px) {
+    .custom-outline-btn {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+  }
+</style>
+
+<div class="container applicants-page">
+  <h1>Applicants for Your Jobs</h1>
+
+  {% if applications %}
+    {% regroup applications by job as job_list %}
+
+    {% for job_group in job_list %}
+      <div class="job-group">
+        <!-- Job header -->
+        <button class="btn custom-outline-btn w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#job-{{ forloop.counter }}" aria-expanded="false" aria-controls="job-{{ forloop.counter }}">
+          {{ job_group.grouper.title }} – {{ job_group.grouper.location }}
+        </button>
+
+        <!-- Collapsible applicants -->
+        <div class="collapse mt-2" id="job-{{ forloop.counter }}">
+          <div class="list-group">
+            {% for app in job_group.list %}
+              <div class="list-group-item">
+                <p><strong>Applicant:</strong> {{ app.applicant.username }}</p>
+                <p><strong>Note:</strong> {{ app.note|default:"No note" }}</p>
+
+                <form method="post"
+                      action="{% url 'applications:update_status' app.id %}"
+                      class="status-form d-flex align-items-center gap-2"
+                      data-app-id="{{ app.id }}">
+                  {% csrf_token %}
+                  <label class="mb-0 fw-semibold">Status:</label>
+                  <select name="status"
+                          class="form-select form-select-sm status-dropdown w-auto"
+                          data-url="{% url 'applications:update_status' app.id %}">
+                    {% for code, label in app.STATUS_CHOICES %}
+                      <option value="{{ code }}" {% if app.status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+
+                {% for label, value in app.applicant.visible_attributes.items %}
+                  <p><strong>{{ label }}:</strong> {{ value }}</p>
+                {% endfor %}
+                <p><small class="text-muted">Applied on {{ app.applied_at|date:"M d, Y H:i" }}</small></p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No applicants yet for your jobs.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdowns = document.querySelectorAll('.status-dropdown');
+
+    dropdowns.forEach(function (dropdown) {
+      dropdown.addEventListener('change', function () {
+        const url = this.dataset.url;
+        const form = this.closest('form');
+        const formData = new FormData(form);
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not OK');
+          return response.json();
+        })
+        .then(data => console.log('Status updated:', data))
+        .catch(error => console.error('Error updating status:', error));
+      });
+    });
+  });
+</script>
+{% endblock %}

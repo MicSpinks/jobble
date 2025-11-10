@@ -1,0 +1,176 @@
+{% extends base_template %}
+{% load static %}
+{% block content %}
+
+<style>
+  /* === Candidate Search Page Styling (Scoped) === */
+  .search-page {
+    background-color: #fdfdfd;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+    padding: 2rem 0;
+  }
+
+  .search-page h1 {
+    text-align: center;
+    font-weight: 800;
+    color: #003057; /* GT navy */
+    margin-bottom: 2rem;
+  }
+
+  /* Search form */
+  .search-page .input-group input.form-control {
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .search-page .input-group button {
+    border-radius: 0 8px 8px 0;
+    font-weight: 600;
+    background-color: #003057;
+    color: #fff;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .search-page .input-group button:hover {
+    background-color: #b3a369; /* GT gold */
+    color: #003057;
+  }
+
+  /* Save search button */
+  .search-page .btn-success {
+    background-color: #b3a369;
+    color: #003057;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .search-page .btn-success:hover {
+    background-color: #003057;
+    color: #fff;
+  }
+
+  /* Saved searches list */
+  .search-page ul li {
+    background-color: #fdfdfd;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  }
+
+  .search-page ul li small {
+    display: block;
+    color: #6c757d;
+  }
+
+  /* Candidate cards */
+  .search-page .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    border: none;
+    background-color: #fdfdfd; /* Scoped to page content only */
+  }
+
+  .search-page .card a.btn-outline-secondary {
+    border-radius: 8px;
+    font-weight: 600;
+    color: #003057;
+    border-color: #003057;
+  }
+
+  .search-page .card a.btn-outline-secondary:hover {
+    background-color: #003057;
+    color: #fff;
+  }
+
+  .search-page .card h4 a {
+    color: #003057;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .search-page .card h4 a:hover {
+    color: #b3a369;
+  }
+</style>
+
+<div class="container search-page">
+  <h1>Search Candidates</h1>
+
+  <!-- Search Form -->
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input name="q" value="{{ query }}" class="form-control" placeholder="Search by name, headline, skills, location...">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+
+  <!-- Save Search -->
+  {% if query %}
+  <form method="post" action="{% url 'save_search' %}" class="mb-4">
+    {% csrf_token %}
+    {% if already_saved == False %}
+      <div class="input-group">
+        <input type="hidden" name="query" value="{{ query }}">
+        <input type="text" name="save_search" class="form-control" placeholder="Name this search (optional)">
+        <button class="btn btn-success" type="submit">Save Search</button>
+      </div>
+    {% endif %}
+  </form>
+  {% endif %}
+
+  <!-- Saved Searches -->
+  <ul>
+    {% for s in saved_searches %}
+      <li class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <a href="?q={{ s.query }}">{{ s.name|default:s.query }}</a>
+          <small class="text-muted">Saved {{ s.created_at|date:"Y-m-d H:i" }}</small>
+          <small>Number of Candidates: {{ s.num_of_matches }}</small>
+        </div>
+
+        <form method="post" action="{% url 'delete_saved_search' s.id %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this saved search?');">Delete</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <!-- Candidate Cards -->
+  {% if candidates %}
+  <div class="row">
+    {% for c in candidates %}
+      <div class="col-md-6 mb-3">
+        <div class="card h-100 p-3">
+          <h4 class="card-title"><a href="{% url 'accounts.profile_detail' c.username %}">{{ c.username }}</a></h4>
+
+          {% if c.show_headline and c.headline %}
+          <h5><u>Headline:</u></h5>
+          <p>{{ c.headline }}</p>
+          {% endif %}
+
+          {% if c.show_skills and c.skills %}
+          <h5><u>Skills:</u></h5>
+          <p>{{ c.skills|linebreaksbr }}</p>
+          {% endif %}
+
+          {% if c.show_location and c.location %}
+          <h5><u>Location:</u></h5>
+          <p>{{ c.location }}</p>
+          {% endif %}
+
+          <a href="{% url 'accounts.profile_detail' c.username %}" class="btn btn-outline-secondary btn-sm mt-2">View profile</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info">No candidates found.</div>
+  {% endif %}
+</div>
+
+{% endblock content %}
