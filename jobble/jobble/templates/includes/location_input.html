@@ -1,0 +1,102 @@
+<!-- Location Autocomplete Script -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<style>
+    .location-suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .location-suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    .location-suggestion-item:hover {
+        background-color: #f5f5f5;
+    }
+    .location-suggestion-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+<script>
+let searchTimeout;
+const locationInput = document.getElementById('location-input');
+const suggestionsContainer = document.createElement('div');
+suggestionsContainer.className = 'location-suggestions';
+suggestionsContainer.style.display = 'none';
+locationInput.parentNode.style.position = 'relative';
+locationInput.parentNode.appendChild(suggestionsContainer);
+
+locationInput.addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    const query = e.target.value;
+    
+    if (query.length < 3) {
+        suggestionsContainer.style.display = 'none';
+        return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+        // Use Nominatim for geocoding
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'block';
+                    
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'location-suggestion-item';
+                        div.textContent = item.display_name;
+                        div.dataset.lat = item.lat;
+                        div.dataset.lon = item.lon;
+                        div.dataset.displayName = item.display_name;
+                        
+                        div.addEventListener('click', function() {
+                            locationInput.value = this.dataset.displayName;
+                            
+                            // Update hidden fields
+                            document.getElementById('id_latitude').value = this.dataset.lat;
+                            document.getElementById('id_longitude').value = this.dataset.lon;
+                            
+                            // Parse address components
+                            const addressParts = this.dataset.displayName.split(',');
+                            if (addressParts.length >= 3) {
+                                document.getElementById('id_city').value = addressParts[0].trim();
+                                document.getElementById('id_state').value = addressParts[addressParts.length - 2].trim();
+                                document.getElementById('id_country').value = addressParts[addressParts.length - 1].trim();
+                            }
+                            
+                            suggestionsContainer.style.display = 'none';
+                        });
+                        
+                        suggestionsContainer.appendChild(div);
+                    });
+                } else {
+                    suggestionsContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Geocoding error:', error);
+                suggestionsContainer.style.display = 'none';
+            });
+    }, 500);
+});
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    if (!locationInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.style.display = 'none';
+    }
+});
+</script>

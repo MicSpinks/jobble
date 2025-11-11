@@ -1,13 +1,93 @@
-{% extends base_template %}
+{% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-<div class="container py-4">
-	<h1 class="mb-4">Map</h1>
-	<div class="card">
-		<img src="{% static 'img/WIP.jpg' %}" height=625vh class="card-img-top" alt="Work in progress banner">
-		<div class="card-body">
-			<p class="card-text">This page is under construction. The map will appear here soon.</p>
-		</div>
-	</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-3">Job Opportunities Map</h2>
+            <p class="text-muted">Explore job listings by location</p>
+            <div id="map" style="height: 600px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+        </div>
+    </div>
 </div>
-{% endblock content %}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    // Initialize map centered on US
+    const map = L.map('map').setView([39.8283, -98.5795], 4);
+    
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+    
+    // Custom icon for jobs
+    const jobIcon = L.divIcon({
+        className: 'custom-marker',
+        html: '<div style="background-color: #4CAF50; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 16px;">💼</span></div>',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+    
+    // Fetch and display job markers
+    fetch('{% url "map_data" %}')
+        .then(response => response.json())
+        .then(data => {
+            const markers = data.markers;
+            
+            if (markers.length === 0) {
+                document.getElementById('map').insertAdjacentHTML('beforebegin', 
+                    '<div class="alert alert-info">No job locations to display on the map yet. Check back later for new opportunities!</div>'
+                );
+                return;
+            }
+            
+            // Add markers to map
+            const bounds = [];
+            
+            markers.forEach(marker => {
+                const latLng = [marker.lat, marker.lng];
+                bounds.push(latLng);
+                
+                const popupContent = `
+                    <div style="min-width: 200px;">
+                        <h6 style="margin: 0 0 10px 0; color: #4CAF50;"><strong>${marker.title}</strong></h6>
+                        <p style="margin: 5px 0;"><strong>💰 Salary:</strong> ${marker.salary}</p>
+                        <p style="margin: 5px 0;"><strong>📍 Location:</strong> ${marker.location}</p>
+                        <p style="margin: 5px 0;"><strong>🏢 Type:</strong> ${marker.remote}</p>
+                        <p style="margin: 5px 0;"><strong>🏛️ Company:</strong> ${marker.company}</p>
+                        <a href="/jobs/${marker.id}/" class="btn btn-sm btn-primary mt-2">View Job Details</a>
+                    </div>
+                `;
+                
+                L.marker(latLng, { icon: jobIcon })
+                    .addTo(map)
+                    .bindPopup(popupContent);
+            });
+            
+            // Fit map to show all markers
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading map data:', error);
+            document.getElementById('map').insertAdjacentHTML('beforebegin', 
+                '<div class="alert alert-danger">Error loading map data. Please try again later.</div>'
+            );
+        });
+</script>
+
+<style>
+    .leaflet-popup-content {
+        margin: 15px;
+    }
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

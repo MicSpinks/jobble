@@ -1,0 +1,45 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Job Postings</h1>
+
+  <!-- Job post cards -->
+  <div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card shadow-sm h-100">
+        <div class="card-body">
+        <h5 class="card-title">{{ job.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ job.location }}</h6>
+
+        <p class="card-text">
+            <strong>Salary:</strong> {{ job.salary_display }} <br>
+            <strong>Work Type:</strong> {{ job.get_remote_or_onsite_display }} <br>
+            <strong>Visa Sponsorship:</strong> {{ job.get_visa_sponsorship_display }} <br>
+            <strong>Skills:</strong> {{ job.skills }} <br>
+            <strong>Posted by:</strong> {{ job.posted_by.username }} <br>
+            <small class="text-muted">{{ job.date_posted|date:"M d, Y" }}</small>
+        </p>
+
+        <!-- Apply button for job seekers -->
+        {% if user.is_authenticated and user.role == 'user' and user != job.posted_by %}
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#applyModal{{ job.id }}">
+            Apply
+            </button>
+
+            <!-- Apply Modal -->
+            <div class="modal fade" id="applyModal{{ job.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                {% include 'applications/apply_modal.html' %}
+                </div>
+            </div>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

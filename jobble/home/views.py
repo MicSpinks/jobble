@@ -3,6 +3,8 @@ from jobs.models import JobPosting
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from jobs.models import JobPosting  
+from django.http import JsonResponse
+
 
 # Create your views here.
 
@@ -63,8 +65,45 @@ def jobs(request):
 
     return render(request, 'home/jobs.html', {'jobs': jobs})
 
+@login_required
 def maps(request):
     return render(request, 'home/maps.html')
+
+@login_required
+def map_data(request):
+    """API endpoint to return job posting markers - only for users"""
+    # Only users can access job map data
+    if request.user.role != 'user':
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    markers = []
+    
+    # Get all jobs with valid location data
+    jobs = JobPosting.objects.filter(
+        latitude__isnull=False,
+        longitude__isnull=False
+    ).select_related('posted_by')
+    
+    for job in jobs:
+        markers.append({
+            'type': 'job',
+            'lat': float(job.latitude),
+            'lng': float(job.longitude),
+            'title': job.title,
+            'salary': job.salary_display,
+            'location': job.location,
+            'company': job.posted_by.username,  # or company name if you have it
+            'remote': job.get_remote_or_onsite_display(),
+            'id': int(job.id),
+            'url': f'/jobs/{job.id}/'  # Adjust to your job detail URL
+        })
+    
+    return JsonResponse({'markers': markers})
+
+@login_required
+def job_view(request, job_id):
+    job = get_object_or_404(JobPosting, id=job_id)
+    return render(request, 'home/job_view.html', {'job': job})
 
 @login_required
 def messages(request):

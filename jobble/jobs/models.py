@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
 
@@ -20,7 +21,20 @@ class JobPosting(models.Model):
         help_text="List required skills, separated by commas",
         default=""
     )
-    location = models.CharField(max_length=100, default="Not specified")
+    location = models.CharField(max_length=100, default="")
+    latitude = models.FloatField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(-90), MaxValueValidator(90)]
+    )
+    longitude = models.FloatField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(-180), MaxValueValidator(180)]
+    )
+    city = models.CharField(max_length=100, blank=True, default='')
+    state = models.CharField(max_length=100, blank=True, default='')
+    country = models.CharField(max_length=100, blank=True, default='')
 
     # ✅ Split salary into two integer fields
     min_salary = models.IntegerField(default=0, help_text="Minimum annual salary (USD)")
