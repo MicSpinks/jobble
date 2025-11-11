@@ -17,8 +17,22 @@ def edit_job(request, job_id):
     if request.method == "POST":
         form = JobPostingForm(request.POST, instance=job)
         if form.is_valid():
-            form.save()
-            return redirect('job_list')
+            job = form.save(commit=False)
+            job.posted_by = request.user
+            
+            # Geocode the location
+            location = form.cleaned_data.get('location')
+            if location:
+                geo_data = geocode_location(location)
+                if geo_data:
+                    job.latitude = geo_data['latitude']
+                    job.longitude = geo_data['longitude']
+                    job.city = geo_data['city']
+                    job.state = geo_data['state']
+                    job.country = geo_data['country']
+            
+            job.save()
+            return redirect('job_list')  # Or wherever you want to redirect
     else:
         form = JobPostingForm(instance=job)
 
