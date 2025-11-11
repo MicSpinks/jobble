@@ -50,7 +50,8 @@
             const bounds = [];
             
             markers.forEach(marker => {
-                const latLng = [marker.lat, marker.lng];
+                const offset = (Math.random() - 0.5) / 1000;
+                const latLng = [marker.lat + offset, marker.lng + offset];
                 bounds.push(latLng);
                 
                 const popupContent = `
